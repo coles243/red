@@ -1,4 +1,3 @@
-```markdown
 # Redis Easy Driver
 
 This project provides a simple interface to interact with a Redis database using Go. It includes functions to create, retrieve, and delete sets in Redis, making it easier to manage data.
