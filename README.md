@@ -5,7 +5,7 @@ This project provides a simple interface to interact with a Redis database using
 ## Features
 
 - **CreateSet**: Store a key-value pair in Redis with an expiration time.
-- **SetReteriver**: Retrieve a value from Redis based on a key.
+- **FetchValue**: Retrieve a value from Redis based on a key.
 - **Delete**: Delete a key-value pair from Redis.
 
 ## Installation
@@ -25,16 +25,16 @@ First, create a Redis client and initialize the `RedisDB` struct:
 package main
 
 import (
-	"github.com/coles243/red/red"
-	"github.com/redis/go-redis/v9"
+    "github.com/coles243/red/red"
+    "github.com/redis/go-redis/v9"
 )
 
 func main() {
-	test := red.RedisDB{
-		DB: redis.NewClient(&redis.Options{
-			Addr: "localhost:6379", // Redis server address
-		}),
-	}
+    test := red.RedisDB{
+        DB: redis.NewClient(&redis.Options{
+            Addr: "localhost:6379", // Redis server address
+        }),
+    }
 }
 ```
 
@@ -45,27 +45,27 @@ Use the `CreateSet` method to store a key-value pair in Redis with an expiration
 ```go
 data, err := test.CreateSet("key", "value", time.Duration(10)*time.Second)
 if err != nil {
-	fmt.Println(err)
+    fmt.Println(err)
 } else {
-	fmt.Println(data)
+    fmt.Println(data)
 }
 ```
 
 ### Retrieve a Set
 
-Use the `SetReteriver` method to retrieve a value from Redis based on a key:
+Use the `FetchValue` method to retrieve a value from Redis based on a key:
 
 ```go
-getdata, err := test.SetReteriver("key")
+getdata, err := test.FetchValue("key")
 if err != nil {
-	fmt.Println(err)
-	return
+    fmt.Println(err)
+    return
 }
 
 if strValue, ok := getdata.(string); ok {
-	fmt.Println("Retrieved value:", strValue)
+    fmt.Println("Retrieved value:", strValue)
 } else {
-	fmt.Println("Unexpected type")
+    fmt.Println("Unexpected type")
 }
 ```
 
@@ -76,72 +76,72 @@ Use the `Delete` method to delete a key-value pair from Redis:
 ```go
 response, err := test.Delete("key")
 if err != nil {
-	fmt.Println(err)
+    fmt.Println(err)
 } else {
-	fmt.Println("Deleted records:", response)
+    fmt.Println("Deleted records:", response)
 }
 ```
 
 ### Example
 
-Here's a complete example that demonstrates how to use the `CreateSet`, `SetReteriver`, and `Delete` methods:
+Here's a complete example that demonstrates how to use the `CreateSet`, `FetchValue`, and `Delete` methods:
 
 ```go
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"time"
+    "encoding/json"
+    "fmt"
+    "time"
 
-	"github.com/coles243/red/red"
-	"github.com/redis/go-redis/v9"
+    "github.com/coles243/red/red"
+    "github.com/redis/go-redis/v9"
 )
 
 func main() {
-	test := red.RedisDB{
-		DB: redis.NewClient(&redis.Options{
-			Addr: "localhost:6379",
-		}),
-	}
+    test := red.RedisDB{
+        DB: redis.NewClient(&redis.Options{
+            Addr: "localhost:6379",
+        }),
+    }
 
-	type Author struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
-	}
+    type Author struct {
+        Name string `json:"name"`
+        Age  int    `json:"age"`
+    }
 
-	var person Author
-	jsonz, err := json.Marshal(Author{Name: "Elliot", Age: 25})
-	if err != nil {
-		fmt.Println(err)
-	}
+    var person Author
+    jsonz, err := json.Marshal(Author{Name: "Elliot", Age: 25})
+    if err != nil {
+        fmt.Println(err)
+    }
 
-	test.CreateSet("al", jsonz, time.Duration(10)*time.Second)
+    test.CreateSet("al", jsonz, time.Duration(10)*time.Second)
 
-	getdata, err := test.SetReteriver("al")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+    getdata, err := test.FetchValue("al")
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
 
-	v, ok := getdata.(string)
-	if ok {
-		err = json.Unmarshal([]byte(v), &person)
-		if err != nil {
-			fmt.Println("Error decoding JSON:", err)
-			return
-		}
-		fmt.Printf("Decoded Author: %+v\n", person)
-	} else {
-		fmt.Println("Unexpected type")
-	}
+    v, ok := getdata.(string)
+    if ok {
+        err = json.Unmarshal([]byte(v), &person)
+        if err != nil {
+            fmt.Println("Error decoding JSON:", err)
+            return
+        }
+        fmt.Printf("Decoded Author: %+v\n", person)
+    } else {
+        fmt.Println("Unexpected type")
+    }
 
-	response, err := test.Delete("al")
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Deleted records:", response)
-	}
+    response, err := test.Delete("al")
+    if err != nil {
+        fmt.Println(err)
+    } else {
+        fmt.Println("Deleted records:", response)
+    }
 }
 ```
 
@@ -150,3 +150,4 @@ func main() {
 - **Simplicity**: Provides a simple interface to interact with Redis.
 - **Flexibility**: Supports storing and retrieving various data types.
 - **Efficiency**: Uses Redis for fast data storage and retrieval.
+

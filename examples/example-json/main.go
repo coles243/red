@@ -16,48 +16,49 @@ type Person struct {
 
 func main() {
 	var ReturnedUser Person
-	// var UnserializedUser Person
+
+	// Create a sample user
 	UserJson := Person{
 		Name: "John Doe",
 		Age:  30,
 	}
 
-	// create connection with redisDb
+	// Create a connection with Redis
 	db := red.RedisDB{
 		DB: redis.NewClient(
 			&redis.Options{},
 		),
 	}
 
-	//serialize to json
+	// Serialize the user to JSON
 	data, err := json.Marshal(UserJson)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	response, err := db.CreateSet("User1", data, time.Duration(time.Duration(10).Seconds()))
-
+	// Store the JSON data in Redis with a key and expiration time
+	response, err := db.CreateSet("User1", data, time.Duration(10)*time.Second)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	// return string status
+	// Print the response status
 	fmt.Println(response)
 
-	// deserialize to a go type
-	Getdata, err := db.SetReteriver("User1")
+	// Retrieve the JSON data from Redis
+	Getdata, err := db.FetchValue("User1")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
+	// Deserialize the JSON data back to a Go struct
 	if v, ok := Getdata.(string); ok {
 		err = json.Unmarshal([]byte(v), &ReturnedUser)
 		if err != nil {
 			fmt.Println(err.Error())
-
 		}
 	}
-	// Return Go Object
-	fmt.Printf("Hi my name is %v and age is %v\n", ReturnedUser.Name, ReturnedUser.Age)
 
+	// Print the deserialized Go object
+	fmt.Printf("Hi, my name is %v and my age is %v\n", ReturnedUser.Name, ReturnedUser.Age)
 }

@@ -16,7 +16,7 @@ type RedisDB struct {
 	DB *redis.Client
 }
 
-// create a set
+// Create a Key,Value
 func (r *RedisDB) CreateSet(key string, value interface{}, exp time.Duration) (string, error) {
 	_, err := r.DB.Ping(ctx).Result()
 	if err != nil {
@@ -32,7 +32,7 @@ func (r *RedisDB) CreateSet(key string, value interface{}, exp time.Duration) (s
 }
 
 // retrieve set based on key input
-func (r *RedisDB) SetReteriver(key string) (interface{}, error) {
+func (r *RedisDB) FetchValue(key string) (interface{}, error) {
 
 	var data interface{}
 	_, err := r.DB.Ping(ctx).Result()
