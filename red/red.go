@@ -25,7 +25,7 @@ func (r *RedisDB) CreateSet(key string, value interface{}, exp time.Duration) (s
 
 	err = r.DB.Set(ctx, key, value, exp).Err()
 	if err != nil {
-		redErr := fmt.Sprintln(err)
+		redErr := fmt.Sprintln(err.Error())
 		return "", errors.New("Unable to establish New Record: " + redErr)
 	}
 	return "Record created successfully", nil
@@ -42,7 +42,7 @@ func (r *RedisDB) SetReteriver(key string) (interface{}, error) {
 
 	response, err := r.DB.Get(ctx, key).Result()
 	if err != nil {
-		redErr := fmt.Sprintln(err)
+		redErr := fmt.Sprintln(err.Error())
 		data = response
 		return data, errors.New("There was a problem retrieving from redis: " + redErr)
 	}
@@ -67,5 +67,3 @@ func (r *RedisDB) Delete(key string) (int64, error) {
 
 	return response, nil
 }
-
-// Hashes
