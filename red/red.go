@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -20,7 +19,7 @@ type RedisDB struct {
 func (r *RedisDB) CreateSet(key string, value interface{}, exp time.Duration) (string, error) {
 	_, err := r.DB.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalln("Redis connection was refused")
+		return "", fmt.Errorf("error Establishing connection: %v", err)
 	}
 
 	err = r.DB.Set(ctx, key, value, exp).Err()
@@ -37,7 +36,7 @@ func (r *RedisDB) FetchValue(key string) (interface{}, error) {
 	var data interface{}
 	_, err := r.DB.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalln("Redis connection was refused")
+		return "", fmt.Errorf("error Establishing connection: %v", err)
 	}
 
 	response, err := r.DB.Get(ctx, key).Result()
@@ -56,7 +55,7 @@ func (r *RedisDB) Delete(key string) (int64, error) {
 
 	_, err := r.DB.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalln("Redis connection was refused")
+		return 1, fmt.Errorf("error Establishing connection: %v", err)
 	}
 
 	response, err := r.DB.Del(ctx, key).Result()
@@ -66,4 +65,31 @@ func (r *RedisDB) Delete(key string) (int64, error) {
 	}
 
 	return response, nil
+}
+
+// Updating from Database
+// Update an existing key's value in Redis
+func (r *RedisDB) UpdateValue(key string, newValue interface{}, exp time.Duration) (string, error) {
+
+	_, err := r.DB.Ping(ctx).Result()
+	if err != nil {
+		return "", fmt.Errorf("error Establishing connection: %v", err)
+	}
+
+	// Check if the key exists
+	exists, err := r.DB.Exists(ctx, key).Result()
+	if err != nil {
+		return "", fmt.Errorf("error checking if key exists: %v", err)
+	}
+	if exists == 0 {
+		return "", errors.New("key does not exist")
+	}
+
+	// Update the key's value
+	err = r.DB.Set(ctx, key, newValue, exp).Err()
+	if err != nil {
+		return "", fmt.Errorf("error updating key: %v", err)
+	}
+
+	return "Value updated successfully", nil
 }
