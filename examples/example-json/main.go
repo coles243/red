@@ -30,6 +30,9 @@ func main() {
 		),
 	}
 
+	// Ensure the Redis connection is closed when done
+	defer db.DB.Close()
+
 	// Serialize the user to JSON
 	data, err := json.Marshal(UserJson)
 	if err != nil {
@@ -52,6 +55,7 @@ func main() {
 	}
 
 	// Deserialize the JSON data back to a Go struct
+	// Values returned are always interface object, Validate Below
 	if v, ok := Getdata.(string); ok {
 		err = json.Unmarshal([]byte(v), &ReturnedUser)
 		if err != nil {

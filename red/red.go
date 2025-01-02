@@ -67,10 +67,8 @@ func (r *RedisDB) Delete(key string) (int64, error) {
 	return response, nil
 }
 
-// Updating from Database
 // Update an existing key's value in Redis
 func (r *RedisDB) UpdateValue(key string, newValue interface{}, exp time.Duration) (string, error) {
-
 	_, err := r.DB.Ping(ctx).Result()
 	if err != nil {
 		return "", fmt.Errorf("error Establishing connection: %v", err)
@@ -85,11 +83,12 @@ func (r *RedisDB) UpdateValue(key string, newValue interface{}, exp time.Duratio
 		return "", errors.New("key does not exist")
 	}
 
-	// Update the key's value
-	err = r.DB.Set(ctx, key, newValue, exp).Err()
+	_, err = r.CreateSet(key, newValue, exp)
+
 	if err != nil {
 		return "", fmt.Errorf("error updating key: %v", err)
 	}
 
-	return "Value updated successfully", nil
+	return "Value Updated Successfully", nil
+
 }

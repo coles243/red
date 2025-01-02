@@ -1,11 +1,12 @@
 # Redis Easy Driver
 
-This project provides a simple interface to interact with a Redis database using Go. It includes functions to create, retrieve, and delete sets in Redis, making it easier to manage data.
+This project provides a simple interface to interact with a Redis database using Go. It includes functions to create, retrieve, update, and delete sets in Redis, making it easier to manage data.
 
 ## Features
 
 - **CreateSet**: Store a key-value pair in Redis with an expiration time.
 - **FetchValue**: Retrieve a value from Redis based on a key.
+- **UpdateValue**: Update the value of an existing key in Redis with an optional new expiration time.
 - **Delete**: Delete a key-value pair from Redis.
 
 ## Installation
@@ -69,6 +70,19 @@ if strValue, ok := getdata.(string); ok {
 }
 ```
 
+### Update a Set
+
+Use the `UpdateValue` method to update the value of an existing key in Redis. This method also allows you to set a new expiration time:
+
+```go
+response, err := test.UpdateValue("key", "newValue", time.Duration(20)*time.Second)
+if err != nil {
+    fmt.Println(err)
+} else {
+    fmt.Println(response)
+}
+```
+
 ### Delete a Set
 
 Use the `Delete` method to delete a key-value pair from Redis:
@@ -84,7 +98,7 @@ if err != nil {
 
 ### Example
 
-Here's a complete example that demonstrates how to use the `CreateSet`, `FetchValue`, and `Delete` methods:
+Here's a complete example that demonstrates how to use the `CreateSet`, `FetchValue`, `UpdateValue`, and `Delete` methods:
 
 ```go
 package main
@@ -136,6 +150,8 @@ func main() {
         fmt.Println("Unexpected type")
     }
 
+    test.UpdateValue("al", Author{Name: "Elliot", Age: 30}, time.Duration(20)*time.Second)
+
     response, err := test.Delete("al")
     if err != nil {
         fmt.Println(err)
@@ -150,4 +166,3 @@ func main() {
 - **Simplicity**: Provides a simple interface to interact with Redis.
 - **Flexibility**: Supports storing and retrieving various data types.
 - **Efficiency**: Uses Redis for fast data storage and retrieval.
-
